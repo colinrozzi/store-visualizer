@@ -20,7 +20,7 @@ cargo build --release
 2. Update the init.json with your key-value store actor ID:
 ```json
 {
-    "key_value_actor": "your-key-value-actor-id"
+    "store_id": "your-store-actor-id"
 }
 ```
 

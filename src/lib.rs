@@ -2,10 +2,10 @@ mod bindings;
 
 use bindings::exports::ntwk::theater::actor::Guest as ActorGuest;
 use bindings::exports::ntwk::theater::http_server::Guest as HttpGuest;
-use bindings::exports::ntwk::theater::message_server_client::Guest as MessageServerClientGuest;
 use bindings::exports::ntwk::theater::http_server::{
     HttpRequest as ServerHttpRequest, HttpResponse,
 };
+use bindings::exports::ntwk::theater::message_server_client::Guest as MessageServerClientGuest;
 use bindings::ntwk::theater::filesystem::read_file;
 use bindings::ntwk::theater::message_server_host::request;
 use bindings::ntwk::theater::runtime::log;
@@ -15,7 +15,7 @@ use serde_json::{json, Value};
 
 #[derive(Serialize, Deserialize, Debug)]
 struct State {
-    key_value_actor: String,
+    store_id: String,
 }
 
 // Reuse the Request/Action types from key-value actor
@@ -40,7 +40,7 @@ impl State {
         };
 
         let request_bytes = serde_json::to_vec(&req)?;
-        let response_bytes = request(&self.key_value_actor, &request_bytes)?;
+        let response_bytes = request(&self.store_id, &request_bytes)?;
 
         let response: Value = serde_json::from_slice(&response_bytes)?;
         if response["status"].as_str() == Some("ok") {
@@ -53,7 +53,7 @@ impl State {
 
 #[derive(Serialize, Deserialize, Debug)]
 struct InitData {
-    key_value_actor: String,
+    store_id: String,
 }
 
 struct Component;
@@ -64,10 +64,10 @@ impl ActorGuest for Component {
         let data = data.unwrap();
 
         let init_data: InitData = serde_json::from_slice(&data).unwrap();
-        log(&format!("Key value actor: {}", init_data.key_value_actor));
+        log(&format!("Store actor id: {}", init_data.store_id));
 
         let initial_state = State {
-            key_value_actor: init_data.key_value_actor,
+            store_id: init_data.store_id,
         };
 
         serde_json::to_vec(&initial_state).unwrap()
@@ -161,16 +161,21 @@ impl HttpGuest for Component {
 impl MessageServerClientGuest for Component {
     fn handle_send(msg: Json, state: Json) -> Json {
         log("Handling message server client send");
-        log(&format!("Message: {}", String::from_utf8(msg).unwrap_or_default()));
+        log(&format!(
+            "Message: {}",
+            String::from_utf8(msg).unwrap_or_default()
+        ));
         state
     }
 
     fn handle_request(msg: Json, state: Json) -> (Json, Json) {
         log("Handling message server client request");
-        log(&format!("Message: {}", String::from_utf8(msg).unwrap_or_default()));
+        log(&format!(
+            "Message: {}",
+            String::from_utf8(msg).unwrap_or_default()
+        ));
         (vec![], state)
     }
 }
 
 bindings::export!(Component with_types_in bindings);
-
