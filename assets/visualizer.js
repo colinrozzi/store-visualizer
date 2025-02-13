@@ -1,0 +1,84 @@
+let currentEntries = [];
+
+async function fetchStoreContents() {
+    try {
+        const response = await fetch('/api/store-contents');
+        const data = await response.json();
+        if (data.status === 'success') {
+            currentEntries = data.entries;
+            renderEntries(currentEntries);
+        } else {
+            console.error('Failed to fetch store contents');
+        }
+    } catch (error) {
+        console.error('Error fetching store contents:', error);
+    }
+}
+
+function renderEntries(entries) {
+    const container = document.querySelector('.store-entries');
+    container.innerHTML = '';
+
+    entries.forEach(entry => {
+        const div = document.createElement('div');
+        div.className = 'entry';
+        
+        // Try to parse the value as JSON for preview
+        let valuePreview = '';
+        try {
+            const value = new Uint8Array(entry.value);
+            const text = new TextDecoder().decode(value);
+            const parsed = JSON.parse(text);
+            valuePreview = JSON.stringify(parsed).slice(0, 100) + '...';
+        } catch (e) {
+            valuePreview = 'Binary data';
+        }
+
+        div.innerHTML = `
+            <strong>${entry.key}</strong>
+            <div class="value-preview">${valuePreview}</div>
+        `;
+
+        div.addEventListener('click', () => showDetails(entry));
+        container.appendChild(div);
+    });
+}
+
+function showDetails(entry) {
+    // Update selected state
+    document.querySelectorAll('.entry').forEach(el => el.classList.remove('selected'));
+    document.querySelector(`.entry:has(strong:contains('${entry.key}'))`).classList.add('selected');
+
+    const detailsContent = document.querySelector('.details-content');
+    
+    try {
+        const value = new Uint8Array(entry.value);
+        const text = new TextDecoder().decode(value);
+        const parsed = JSON.parse(text);
+        
+        detailsContent.innerHTML = `
+            <h3>Key: ${entry.key}</h3>
+            <pre>${JSON.stringify(parsed, null, 2)}</pre>
+        `;
+    } catch (e) {
+        detailsContent.innerHTML = `
+            <h3>Key: ${entry.key}</h3>
+            <p>Binary data:</p>
+            <pre>${Array.from(entry.value).join(', ')}</pre>
+        `;
+    }
+}
+
+function filterEntries(searchText) {
+    const filtered = currentEntries.filter(entry => 
+        entry.key.toLowerCase().includes(searchText.toLowerCase())
+    );
+    renderEntries(filtered);
+}
+
+// Event Listeners
+document.getElementById('refresh').addEventListener('click', fetchStoreContents);
+document.getElementById('search').addEventListener('input', (e) => filterEntries(e.target.value));
+
+// Initial load
+fetchStoreContents();
