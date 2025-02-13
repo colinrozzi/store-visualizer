@@ -47,7 +47,13 @@ function renderEntries(entries) {
 function showDetails(entry) {
     // Update selected state
     document.querySelectorAll('.entry').forEach(el => el.classList.remove('selected'));
-    document.querySelector(`.entry:has(strong:contains('${entry.key}'))`).classList.add('selected');
+    // Find the entry by looking at all entries and matching the key
+    const entries = document.querySelectorAll('.entry');
+    entries.forEach(el => {
+        if (el.querySelector('strong').textContent === entry.key) {
+            el.classList.add('selected');
+        }
+    });
 
     const detailsContent = document.querySelector('.details-content');
     
