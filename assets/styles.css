@@ -58,6 +58,27 @@ button:hover {
     background: #0056b3;
 }
 
+.action-buttons {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.action-buttons button {
+    min-width: 120px;
+}
+
+.action-buttons button.success {
+    background-color: #28a745;
+}
+
+.action-buttons button.success:hover {
+    background-color: #218838;
+}
+
 .store-entries {
     background: white;
     border-radius: 8px;

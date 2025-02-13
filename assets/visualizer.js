@@ -44,7 +44,10 @@ function renderEntries(entries) {
     });
 }
 
+let selectedEntry = null;
+
 function showDetails(entry) {
+    selectedEntry = entry;
     // Update selected state
     document.querySelectorAll('.entry').forEach(el => el.classList.remove('selected'));
     // Find the entry by looking at all entries and matching the key
@@ -73,6 +76,12 @@ function showDetails(entry) {
             <pre>${Array.from(entry.value).join(', ')}</pre>
         `;
     }
+
+    // Update action buttons
+    const actionButtons = document.querySelector('.action-buttons');
+    actionButtons.innerHTML = `
+        <button onclick="copyToClipboard('${entry.key}')">Copy ID</button>
+    `;
 }
 
 function filterEntries(searchText) {
@@ -85,6 +94,21 @@ function filterEntries(searchText) {
 // Event Listeners
 document.getElementById('refresh').addEventListener('click', fetchStoreContents);
 document.getElementById('search').addEventListener('input', (e) => filterEntries(e.target.value));
+
+async function copyToClipboard(text) {
+    try {
+        await navigator.clipboard.writeText(text);
+        const button = document.querySelector('.action-buttons button');
+        button.textContent = 'Copied!';
+        button.classList.add('success');
+        setTimeout(() => {
+            button.textContent = 'Copy ID';
+            button.classList.remove('success');
+        }, 2000);
+    } catch (err) {
+        console.error('Failed to copy text: ', err);
+    }
+}
 
 // Initial load
 fetchStoreContents();
