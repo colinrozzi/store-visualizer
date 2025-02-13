@@ -2,6 +2,7 @@ name = "store-visualizer"
 version = "0.1.0"
 description = "Visualization interface for key-value store contents"
 component_path = "/Users/colinrozzi/work/actors/store-visualizer/target/wasm32-unknown-unknown/release/store_visualizer.wasm"
+init_data = "/Users/colinrozzi/work/actors/store-visualizer/assets/init.json"
 
 [interface]
 implements = "ntwk:theater/single-actor"

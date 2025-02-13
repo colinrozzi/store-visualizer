@@ -2,6 +2,7 @@ mod bindings;
 
 use bindings::exports::ntwk::theater::actor::Guest as ActorGuest;
 use bindings::exports::ntwk::theater::http_server::Guest as HttpGuest;
+use bindings::exports::ntwk::theater::message_server_client::Guest as MessageServerClientGuest;
 use bindings::exports::ntwk::theater::http_server::{
     HttpRequest as ServerHttpRequest, HttpResponse,
 };
@@ -154,6 +155,20 @@ impl HttpGuest for Component {
                 state,
             ),
         }
+    }
+}
+
+impl MessageServerClientGuest for Component {
+    fn handle_send(msg: Json, state: Json) -> Json {
+        log("Handling message server client send");
+        log(&format!("Message: {}", String::from_utf8(msg).unwrap_or_default()));
+        state
+    }
+
+    fn handle_request(msg: Json, state: Json) -> (Json, Json) {
+        log("Handling message server client request");
+        log(&format!("Message: {}", String::from_utf8(msg).unwrap_or_default()));
+        (vec![], state)
     }
 }
 
