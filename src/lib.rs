@@ -2,7 +2,9 @@ mod bindings;
 
 use bindings::exports::ntwk::theater::actor::Guest as ActorGuest;
 use bindings::exports::ntwk::theater::http_server::Guest as HttpGuest;
-use bindings::exports::ntwk::theater::http_server::{HttpRequest as ServerHttpRequest, HttpResponse};
+use bindings::exports::ntwk::theater::http_server::{
+    HttpRequest as ServerHttpRequest, HttpResponse,
+};
 use bindings::ntwk::theater::filesystem::read_file;
 use bindings::ntwk::theater::message_server_host::request;
 use bindings::ntwk::theater::runtime::log;
@@ -59,7 +61,7 @@ impl ActorGuest for Component {
     fn init(data: Option<Vec<u8>>) -> Vec<u8> {
         log("Initializing store visualizer actor");
         let data = data.unwrap();
-        
+
         let init_data: InitData = serde_json::from_slice(&data).unwrap();
         log(&format!("Key value actor: {}", init_data.key_value_actor));
 
@@ -103,7 +105,10 @@ impl HttpGuest for Component {
                 (
                     HttpResponse {
                         status: 200,
-                        headers: vec![("Content-Type".to_string(), "application/javascript".to_string())],
+                        headers: vec![(
+                            "Content-Type".to_string(),
+                            "application/javascript".to_string(),
+                        )],
                         body: Some(content),
                     },
                     state,
@@ -115,9 +120,10 @@ impl HttpGuest for Component {
                     Ok(entries) => (
                         HttpResponse {
                             status: 200,
-                            headers: vec![
-                                ("Content-Type".to_string(), "application/json".to_string()),
-                            ],
+                            headers: vec![(
+                                "Content-Type".to_string(),
+                                "application/json".to_string(),
+                            )],
                             body: Some(
                                 serde_json::to_vec(&json!({
                                     "status": "success",
@@ -152,3 +158,4 @@ impl HttpGuest for Component {
 }
 
 bindings::export!(Component with_types_in bindings);
+
