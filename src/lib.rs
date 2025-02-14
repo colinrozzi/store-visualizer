@@ -61,7 +61,12 @@ struct Component;
 impl ActorGuest for Component {
     fn init(data: Option<Vec<u8>>) -> Vec<u8> {
         log("Initializing store visualizer actor");
+        log(&format!("Data: {:?}", data));
         let data = data.unwrap();
+        log(&format!(
+            "Data: {}",
+            String::from_utf8(data.clone()).unwrap_or_default()
+        ));
 
         let init_data: InitData = serde_json::from_slice(&data).unwrap();
         log(&format!("Store actor id: {}", init_data.store_id));
