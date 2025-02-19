@@ -4,11 +4,11 @@ async function fetchStoreContents() {
     try {
         const response = await fetch('/api/store-contents');
         const data = await response.json();
-        if (data.status === 'success') {
-            currentEntries = data.entries;
+        if (data.status === 'success' && data.entries && data.entries.All && data.entries.All.data) {
+            currentEntries = data.entries.All.data;
             renderEntries(currentEntries);
         } else {
-            console.error('Failed to fetch store contents');
+            console.error('Failed to fetch store contents', data);
         }
     } catch (error) {
         console.error('Error fetching store contents:', error);
@@ -26,11 +26,13 @@ function renderEntries(entries) {
         // Try to parse the value as JSON for preview
         let valuePreview = '';
         try {
+            // Parse the byte array to a string
             const value = new Uint8Array(entry.value);
             const text = new TextDecoder().decode(value);
             const parsed = JSON.parse(text);
             valuePreview = JSON.stringify(parsed).slice(0, 100) + '...';
         } catch (e) {
+            console.error('Error parsing entry:', e);
             valuePreview = 'Binary data';
         }
 
