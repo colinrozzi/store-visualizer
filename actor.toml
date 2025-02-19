@@ -18,4 +18,4 @@ config = { path = "/Users/colinrozzi/work/actors/store-visualizer/assets"}
 
 [[handlers]]
 type = "http-server"
-config = { port = 8085}
+config = { port = 8090}

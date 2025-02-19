@@ -123,23 +123,26 @@ impl HttpGuest for Component {
             ("GET", "/api/store-contents") => {
                 let current_state: State = serde_json::from_slice(&state).unwrap();
                 match current_state.get_all_entries() {
-                    Ok(entries) => (
-                        HttpResponse {
-                            status: 200,
-                            headers: vec![(
-                                "Content-Type".to_string(),
-                                "application/json".to_string(),
-                            )],
-                            body: Some(
-                                serde_json::to_vec(&json!({
-                                    "status": "success",
-                                    "entries": entries
-                                }))
-                                .unwrap(),
-                            ),
-                        },
-                        state,
-                    ),
+                    Ok(entries) => {
+                        log(&format!("Entries: {}", entries));
+                        (
+                            HttpResponse {
+                                status: 200,
+                                headers: vec![(
+                                    "Content-Type".to_string(),
+                                    "application/json".to_string(),
+                                )],
+                                body: Some(
+                                    serde_json::to_vec(&json!({
+                                        "status": "success",
+                                        "entries": entries
+                                    }))
+                                    .unwrap(),
+                                ),
+                            },
+                            state,
+                        )
+                    }
                     Err(_) => (
                         HttpResponse {
                             status: 500,
